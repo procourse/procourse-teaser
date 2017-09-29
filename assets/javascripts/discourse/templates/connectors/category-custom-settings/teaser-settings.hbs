@@ -1,8 +1,22 @@
 <section class='field'>
   <div class="enable-topic-teasing">
     <label class="checkbox-label">
+      {{i18n 'dl_teaser.enable_topic_teasing'}}
       {{input type="checkbox" checked=category.enable_topic_teasing}}
-      {{i18n 'dl_teaser.allow_topic_teasing'}}
     </label>
   </div>
 </section>
+{{#if category.enable_topic_teasing}}
+<section class="field">
+  <div class="topic-teasing-url">
+    <label>{{i18n 'dl_teaser.topic_teasing_url'}}</label>
+    {{input type="text" name="topic-teasing-url" value=category.custom_fields.topic_teasing_url placeholder="/"}}
+  </div>
+</section>
+<section class="field">
+  <div class="topic-teasing-icon">
+    <label>{{i18n 'dl_teaser.topic_teasing_icon'}}</label>
+    {{input type="text" name="topic-teasing-icon" value=category.custom_fields.topic_teasing_icon placeholder="lock"}}
+  </div>
+</section>
+{{/if}}

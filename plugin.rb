@@ -42,7 +42,6 @@ after_initialize do
     end
   end
 
-
   require_dependency 'guardian'
   module ::CategoryGuardian
     alias_method :super_allowed_category_ids, :allowed_category_ids
@@ -50,7 +49,7 @@ after_initialize do
     def allowed_category_ids
       ids = super_allowed_category_ids
       Category.find_each do |category|
-        if SiteSetting.dl_teaser_enabled && category.custom_fields["enable_topic_teasing"]
+        if SiteSetting.dl_teaser_enabled && category.custom_fields["enable_topic_teasing"] == "true"
           ids.push(category.id)
         end
       end
@@ -62,7 +61,7 @@ after_initialize do
     def secure_category_ids
       ids = super_secure_category_ids
       Category.find_each do |category|
-        if SiteSetting.dl_teaser_enabled && category.custom_fields["enable_topic_teasing"]
+        if SiteSetting.dl_teaser_enabled && category.custom_fields["enable_topic_teasing"] == "true"
           ids.push(category.id)
         end
       end
@@ -75,7 +74,9 @@ after_initialize do
   class ::Topic
 
     def teased?(user)
-      if (self.category.category_groups.pluck(:group_id).length > 0)
+      if !user
+        group_access = false
+      elsif (user && self.category.category_groups.pluck(:group_id).length > 0)
         group_access = (self.category.category_groups.pluck(:group_id) & user.groups.pluck(:id)).length > 0
       else
         group_access = true
@@ -88,10 +89,22 @@ after_initialize do
       SiteSetting.dl_teaser_enabled && category_teasing && !group_access
     end
 
+    def topic_teasing_url
+      Category.find(category_id).custom_fields["topic_teasing_url"] || "/"
+    end
+
+    def topic_teasing_icon
+      Category.find(category_id).custom_fields["topic_teasing_icon"] || "shield"
+    end
+
   end
 
   add_to_serializer(:topic_view, :teased) { object.topic.teased?(scope.user) }
+  add_to_serializer(:topic_view, :topic_teasing_url) { object.topic.topic_teasing_url }
+  add_to_serializer(:topic_view, :topic_teasing_icon) { object.topic.topic_teasing_icon }
   add_to_serializer(:topic_list_item, :teased) { object.teased?(scope.user) }
+  add_to_serializer(:topic_list_item, :topic_teasing_url) { object.topic_teasing_url }
+  add_to_serializer(:topic_list_item, :topic_teasing_icon) { object.topic_teasing_icon }
 
   require_dependency 'topics_controller'
   class ::TopicsController
@@ -99,7 +112,8 @@ after_initialize do
 
     def check_teaser
       topic_view = TopicView.new(params[:id] || params[:topic_id], current_user)
-      redirect_to '/top' if topic_view.topic.teased?(current_user)
+      url = topic_view.topic.category.custom_fields["topic_teasing_url"] || "/"
+      redirect_to url if topic_view.topic.teased?(current_user)
     end
   end
 

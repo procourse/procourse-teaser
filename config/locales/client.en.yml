@@ -1,5 +1,7 @@
 en:
   js:
     dl_teaser:
-      allow_topic_teasing: "Allow topics in this category to show up in topic lists for everyone? Only users with sufficient priveleges will be able to visit the topics."
+      enable_topic_teasing: "Allow topics in this category to show up in topic lists for everyone? Only users with sufficient priveleges will be able to visit the topics."
       topic_teased: "This topic is only visible to members of select groups."
+      topic_teasing_url: "Where should users be redirected if insufficient priveleges are found?"
+      topic_teasing_icon: "What font awesome icon would you like to show in the topic list for these topics?"

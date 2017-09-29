@@ -12,7 +12,7 @@ function initializeTeaser(api) {
           openTag: 'span',
           closeTag: 'span',
           title: I18n.t('dl_teaser.topic_teased'),
-          icon: 'credit-card'
+          icon: this.topic.topic_teasing_icon
         });
       }
       return results;

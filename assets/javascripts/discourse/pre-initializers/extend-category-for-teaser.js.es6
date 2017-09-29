@@ -30,13 +30,37 @@ export default {
           this.set("custom_fields.enable_topic_teasing", value);
           return value;
         }
+      },
+
+      @computed('custom_fields.topic_teasing_url')
+      topic_teasing_url: {
+        get(urlField) {
+          return urlField === "/";
+        },
+        set(value) {
+          value = value || "/";
+          this.set("custom_fields.topic_teasing_url", value);
+          return value;
+        }
+      },
+
+      @computed('custom_fields.topic_teasing_icon')
+      topic_teasing_icon: {
+        get(iconField) {
+          return urlField === "shield";
+        },
+        set(value) {
+          value = value || "shield";
+          this.set("custom_fields.topic_teasing_icon", value);
+          return value;
+        }
       }
 
     });
 
     TopicRoute.on("setupTopicController", function(event) {
       if (event.currentModel.teased){
-        document.location.replace("/latest");
+        document.location.replace(event.currentModel.topic_teasing_url);
       }
     })
 
@@ -44,8 +68,7 @@ export default {
       
       checkTeaser: function(){
         if (this.model && this.model.teased){
-          console.log(this.model);
-          document.location.replace("/latest");
+          document.location.replace(this.model.topic_teasing_url);
         }
       }.observes('model')
     })
