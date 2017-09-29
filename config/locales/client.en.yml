@@ -2,3 +2,4 @@ en:
   js:
     dl_teaser:
       allow_topic_teasing: "Allow topics in this category to show up in topic lists for everyone? Only users with sufficient priveleges will be able to visit the topics."
+      topic_teased: "This topic is only visible to members of select groups."
