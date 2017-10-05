@@ -74,27 +74,40 @@ after_initialize do
   class ::Topic
 
     def teased?(user)
-      if !user
-        group_access = false
-      elsif (user && self.category.category_groups.pluck(:group_id).length > 0)
-        group_access = (self.category.category_groups.pluck(:group_id) & user.groups.pluck(:id)).length > 0
-      else
+      if self.archetype == "private_message"
         group_access = true
+        category_teasing = false
+      else
+        if !user
+          group_access = false
+        elsif (user && self.category && self.category.category_groups && self.category.category_groups.pluck(:group_id).length > 0)
+          group_access = (self.category.category_groups.pluck(:group_id) & user.groups.pluck(:id)).length > 0
+        else
+          group_access = true
+        end
+        category = Category.find(category_id)
+        category_teasing = !category.custom_fields.nil?
+        category_teasing = !category.custom_fields["enable_topic_teasing"].nil? if category_teasing
+        category_teasing = category.custom_fields["enable_topic_teasing"] if category_teasing
       end
-      category = Category.find(category_id)
-      category_teasing = !category.custom_fields.nil?
-      category_teasing = !category.custom_fields["enable_topic_teasing"].nil? if category_teasing
-      category_teasing = category.custom_fields["enable_topic_teasing"] if category_teasing
 
       SiteSetting.dl_teaser_enabled && category_teasing && !group_access
     end
 
     def topic_teasing_url
-      Category.find(category_id).custom_fields["topic_teasing_url"] || "/"
+      if category_id
+        Category.find(category_id).custom_fields["topic_teasing_url"] || "/"
+      else
+        ""
+      end
     end
 
     def topic_teasing_icon
-      Category.find(category_id).custom_fields["topic_teasing_icon"] || "shield"
+      if category_id
+        Category.find(category_id).custom_fields["topic_teasing_icon"] || "shield"
+      else
+        ""
+      end
     end
 
   end
