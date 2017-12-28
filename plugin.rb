@@ -60,7 +60,7 @@ after_initialize do
 
     def secure_category_ids
       ids = super_secure_category_ids
-      Category.find_each do |category|
+      Category.unscoped.all.find_each do |category|
         if SiteSetting.dl_teaser_enabled && category.custom_fields["enable_topic_teasing"] == "true"
           ids.push(category.id)
         end
