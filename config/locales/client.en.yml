@@ -5,3 +5,6 @@ en:
       topic_teased: "This topic is only visible to members of select groups."
       topic_teasing_url: "Where should users be redirected if insufficient priveleges are found?"
       topic_teasing_icon: "What font awesome icon would you like to show in the topic list for these topics?"
+      lockdown_enabled: "Should Lockdown be enabled for this category?"
+      lockdown_allowed_groups: "What groups should be allowed to see this category?"
+      
