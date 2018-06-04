@@ -76,7 +76,6 @@ after_initialize do
       if self.archetype == "private_message"
         return false
       else
-        byebug
         if !user
           group_access = false
         elsif (user && self.category && self.category.category_groups && self.category.category_groups.pluck(:group_id).length > 0)
@@ -85,9 +84,11 @@ after_initialize do
           group_access = true
         end
         category = Category.find(category_id)
-        category_teasing = !category.custom_fields.nil?
-        category_teasing = !category.custom_fields["enable_topic_teasing"].nil? if category_teasing
-        category_teasing = category.custom_fields["enable_topic_teasing"] if category_teasing
+        if category.custom_fields && category.custom_fields["enable_topic_teasing"] && category.custom_fields["enable_topic_teasing"] == "true"
+          category_teasing = true
+        else
+          category_teasing = false
+        end
       end
 
       category_teasing && !group_access
