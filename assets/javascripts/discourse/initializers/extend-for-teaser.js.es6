@@ -7,7 +7,6 @@ function initializeTeaser(api) {
   TopicStatus.reopen({
     statuses: function(){
       const results = this._super();
-      console.log(results);
       if (this.topic.teased) {
         results.push({
           openTag: 'span',
