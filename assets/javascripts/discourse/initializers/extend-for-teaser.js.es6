@@ -7,11 +7,12 @@ function initializeTeaser(api) {
   TopicStatus.reopen({
     statuses: function(){
       const results = this._super();
+      console.log(results);
       if (this.topic.teased) {
         results.push({
           openTag: 'span',
           closeTag: 'span',
-          title: I18n.t('dl_teaser.topic_teased'),
+          title: I18n.t('procourse_teaser.topic_teased'),
           icon: this.topic.topic_teasing_icon
         });
       }

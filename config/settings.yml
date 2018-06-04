@@ -1,4 +1,4 @@
 plugins:
-  dl_teaser_enabled:
+  procourse_teaser_enabled:
     default: false
     client: true

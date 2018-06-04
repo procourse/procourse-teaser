@@ -1,1 +1,1 @@
-# dl-teaser
+# procourse-teaser

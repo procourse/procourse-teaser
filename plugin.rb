@@ -1,12 +1,12 @@
-# name: dl-teaser
+# name: procourse-teaser
 # about: Provides methods for teasing the content behind a secured category.
 # version: 0.1
 # authors: Joe Buhlig
-# url: https://github.com/discourse-league/dl-teaser
+# url: https://github.com/procourse/procourse-teaser
 
-enabled_site_setting :dl_teaser_enabled
+enabled_site_setting :procourse_teaser_enabled
 
-register_asset 'stylesheets/dl-teaser.scss'
+register_asset 'stylesheets/procourse-teaser.scss'
 
 after_initialize do
 
@@ -25,7 +25,7 @@ after_initialize do
     @allowed_teasing_cache = DistributedCache.new("allowed_topic_teasing")
 
     def self.can_tease?(category_id)
-      return false unless SiteSetting.dl_teaser_enabled
+      return false unless SiteSetting.procourse_teaser_enabled
 
       unless set = @allowed_teasing_cache["allowed"]
         set = reset_teasing_cache
@@ -48,10 +48,9 @@ after_initialize do
 
     def allowed_category_ids
       ids = super_allowed_category_ids
-      Category.find_each do |category|
-        if SiteSetting.dl_teaser_enabled && category.custom_fields["enable_topic_teasing"] == "true"
-          ids.push(category.id)
-        end
+      if SiteSetting.procourse_teaser_enabled
+        teased_ids = CategoryCustomField.where(name: "enable_topic_teasing").where(value: "true").pluck(:category_id)
+        ids += teased_ids
       end
       return ids
     end
@@ -60,10 +59,9 @@ after_initialize do
 
     def secure_category_ids
       ids = super_secure_category_ids
-      Category.unscoped.all.find_each do |category|
-        if SiteSetting.dl_teaser_enabled && category.custom_fields["enable_topic_teasing"] == "true"
-          ids.push(category.id)
-        end
+      if SiteSetting.procourse_teaser_enabled
+        teased_ids = CategoryCustomField.where(name: "enable_topic_teasing").where(value: "true").pluck(:category_id)
+        ids += teased_ids
       end
       return ids
     end
@@ -74,10 +72,11 @@ after_initialize do
   class ::Topic
 
     def teased?(user)
+      return false unless SiteSetting.procourse_teaser_enabled
       if self.archetype == "private_message"
-        group_access = true
-        category_teasing = false
+        return false
       else
+        byebug
         if !user
           group_access = false
         elsif (user && self.category && self.category.category_groups && self.category.category_groups.pluck(:group_id).length > 0)
@@ -91,7 +90,7 @@ after_initialize do
         category_teasing = category.custom_fields["enable_topic_teasing"] if category_teasing
       end
 
-      SiteSetting.dl_teaser_enabled && category_teasing && !group_access
+      category_teasing && !group_access
     end
 
     def topic_teasing_url
@@ -112,12 +111,39 @@ after_initialize do
 
   end
 
-  add_to_serializer(:topic_view, :teased) { object.topic.teased?(scope.user) }
-  add_to_serializer(:topic_view, :topic_teasing_url) { object.topic.topic_teasing_url }
-  add_to_serializer(:topic_view, :topic_teasing_icon) { object.topic.topic_teasing_icon }
-  add_to_serializer(:topic_list_item, :teased) { object.teased?(scope.user) }
-  add_to_serializer(:topic_list_item, :topic_teasing_url) { object.topic_teasing_url }
-  add_to_serializer(:topic_list_item, :topic_teasing_icon) { object.topic_teasing_icon }
+  require_dependency 'topic_list_item_serializer'
+  class ::TopicListItemSerializer
+    attributes :teased, :topic_teasing_url, :topic_teasing_icon
+
+    def teased
+      object.teased?(scope.user)
+    end
+
+    def topic_teasing_url
+      object.topic_teasing_url
+    end
+
+    def topic_teasing_icon
+      object.topic_teasing_icon
+    end
+  end
+
+  require_dependency 'topic_view_serializer'
+  class ::TopicViewSerializer
+    attributes :teased, :topic_teasing_url, :topic_teasing_icon
+
+    def teased
+      object.topic.teased?(scope.user)
+    end
+
+    def topic_teasing_url
+      object.topic.topic_teasing_url
+    end
+
+    def topic_teasing_icon
+      object.topic.topic_teasing_icon
+    end
+  end
 
   require_dependency 'topics_controller'
   class ::TopicsController
