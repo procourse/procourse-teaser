@@ -60,6 +60,7 @@ export default {
 
     TopicRoute.on("setupTopicController", function(event) {
       if (event.currentModel.teased){
+        console.log(event);
         document.location.replace(event.currentModel.topic_teasing_url);
       }
     })
@@ -68,6 +69,7 @@ export default {
       
       checkTeaser: function(){
         if (this.model && this.model.teased){
+          console.log(this);
           document.location.replace(this.model.topic_teasing_url);
         }
       }.observes('model')
