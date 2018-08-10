@@ -151,9 +151,13 @@ after_initialize do
     before_action :check_teaser, only: :show
 
     def check_teaser
-      cookies[:teaser_url] = request.referer
-
       topic_view = TopicView.new(params[:id] || params[:topic_id], current_user)
+
+      if topic_view.topic.category.custom_fields["topic_teasing_url"] == "/login"
+        cookies[:teaser_url] = request.referer
+      end
+
+
 
       if topic_view.topic.category
         url = topic_view.topic.category.custom_fields["topic_teasing_url"] || "/"
