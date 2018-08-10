@@ -95,7 +95,7 @@ after_initialize do
     end
 
     def topic_teasing_url
-      if category_id
+      if category_id && defined?(category_id)
         Category.find(category_id).custom_fields["topic_teasing_url"] || "/"
       else
         ""
