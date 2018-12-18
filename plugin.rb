@@ -152,13 +152,7 @@ after_initialize do
 
     def check_teaser
       topic_view = TopicView.new(params[:id] || params[:topic_id], current_user)
-
-      if topic_view.topic.category && topic_view.topic.category.custom_fields["topic_teasing_url"] == "/login"
-        cookies[:teaser_url] = request.referer
-      end
-
-
-
+      
       if topic_view.topic.category
         url = topic_view.topic.category.custom_fields["topic_teasing_url"] || "/"
         redirect_to url if topic_view.topic.teased?(current_user)
@@ -169,10 +163,17 @@ after_initialize do
   require_dependency 'session_controller'
     class ::SessionController
         before_action :check_teaser_on_login, only: :create
+        before_action :check_teaser_on_sso_redirect, only: :sso
 
         def check_teaser_on_login
             if cookies[:teaser_url]
                 cookies[:destination_url] = cookies[:teaser_url]
+                cookies.delete(:teaser_url)
+            end
+        end
+        def check_teaser_on_sso_redirect
+            if cookies[:teaser_url]
+                params[:return_path] = cookies[:teaser_url]
                 cookies.delete(:teaser_url)
             end
         end

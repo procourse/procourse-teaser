@@ -68,6 +68,9 @@ export default {
       
       checkTeaser: function(){
         if (this.model && this.model.teased){
+          if (this.model.topic_teasing_url === '/login') {
+            document.cookie = `teaser_url=/t/${this.model.id}; path=/`
+          }
           document.location.replace(this.model.topic_teasing_url);
         }
       }.observes('model')
