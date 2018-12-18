@@ -8,7 +8,9 @@ enabled_site_setting :procourse_teaser_enabled
 
 register_asset 'stylesheets/procourse-teaser.scss'
 
+
 after_initialize do
+  register_svg_icon "shield" if respond_to?(:register_svg_icon)
 
   class ::Category
     def self.reset_teasing_cache
