@@ -154,6 +154,10 @@ after_initialize do
 
     def check_teaser
       topic_view = TopicView.new(params[:id] || params[:topic_id], current_user)
+
+      if topic_view.topic.category && topic_view.topic.category.custom_fields["topic_teasing_url"] == "/login"
+        cookies[:teaser_url] = "/t/#{topic_view.topic.id}"
+      end
       
       if topic_view.topic.category
         url = topic_view.topic.category.custom_fields["topic_teasing_url"] || "/"
