@@ -1,0 +1,7 @@
+fr:
+  js:
+    procourse_teaser:
+      enable_topic_teasing: "Autoriser les sujets de cette catégorie à apparaître dans la liste des sujets de tous les visiteurs ? Seuls les visiteurs avec un accès privilégié pourront voit le contenu des sujets."
+      topic_teased: "Ce sujet est visible uniquement pour les membres de certains groupes."
+      topic_teasing_url: "Sur quelle page vont être redirigés les utilisateurs n'ayant pas les privilèges suffisants ?"
+      topic_teasing_icon: "Quelle icône font awesome souhaitez-vous afficher près du titre des sujets dans la liste des sujets ?"
