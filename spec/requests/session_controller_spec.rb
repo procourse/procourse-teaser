@@ -17,15 +17,12 @@ describe SessionController do
       end
     end
 
-    let(:headers) { { host: Discourse.current_hostname } }
     context 'when logging in via sso' do
       before(:each) do
-        @sso_secret = 'abcdefg'
         SiteSetting.sso_url = 'https://procourse.co'
-        SiteSetting.sso_secret = @sso_secret
+        SiteSetting.sso_secret = 'abcdefg'
         SiteSetting.enable_sso = true
         cookies['teaser_url'] = '/t/100'
-        @user = Fabricate(:user)
       end
       it 'removes the teaser_url cookie' do
         get '/session/sso', params: { return_path: '/' } 
